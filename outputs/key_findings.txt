@@ -1,0 +1,9 @@
+[PROJECT FINDING]: Brent crude posted a cumulative abnormal return of +30.63% in 9 trading days following the February 28 strikes (3.4%/day). By contrast, the de-escalation around the June 17 MoU was largely priced-in beforehand: Brent shed 24.2% of abnormal gains over 10 pre-event trading days (2.4%/day), with only +0.19% incremental movement on the signing day itself — escalation was 1.4x faster than de-escalation. Natural Gas moved less sharply than crude oil, with a peak CAR of +17.87%.
+
+
+VOLATILITY FINDINGS:
+- Brent Crude volatility spiked 1.9x above baseline during the conflict window
+- Peak annualised volatility was 109.7% on 2026-04-20
+- Post-MoU normalisation: volatility returned to 42.7% vs pre-conflict 39.3%
+- Brent-Airlines correlation shifted from -0.286 to -0.571 -- inverse relationship strengthened during crisis
+- Brent-ExxonMobil correlation shifted from +0.724 to +0.659 -- sector divergence confirmed
