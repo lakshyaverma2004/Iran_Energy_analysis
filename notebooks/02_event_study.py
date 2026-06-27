@@ -10,8 +10,6 @@ PROC_DIR = PROJECT_ROOT / "data" / "processed"
 OUT_DIR = PROJECT_ROOT / "outputs"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# ── Event definitions ────────────────────────────────────────────────────────
-
 EVENTS = {
     "E1_Strikes":  "2026-02-28",
     "E2_MoU":      "2026-06-17",
@@ -28,7 +26,6 @@ ALL_ASSETS = PRIMARY_ASSETS + [
 BASELINE_START = "2026-01-02"
 BASELINE_END = "2026-02-27"
 
-# ── PART A — Load data and compute log returns ──────────────────────────────
 
 print("=" * 70)
 print("PART A — Log returns")
@@ -45,7 +42,6 @@ print(f"Saved returns.csv -> {returns.shape[0]} rows x {returns.shape[1]} cols")
 print(f"\nFirst 5 rows:\n{returns.head()}")
 print(f"\nDescriptive stats:\n{returns.describe().round(6)}")
 
-# ── PART B — Expected returns from baseline window ──────────────────────────
 
 print("\n" + "=" * 70)
 print("PART B — Baseline expected returns")
@@ -60,7 +56,7 @@ print("\nExpected daily log returns (baseline mean):")
 for asset, er in expected_returns.items():
     print(f"  {asset:<16s}  {er:+.6f}  ({er*100:+.4f}%)")
 
-# ── PART C — Event window function ──────────────────────────────────────────
+
 
 
 def get_event_window(returns_df, event_date_str, window=10):
@@ -78,12 +74,7 @@ def get_event_window(returns_df, event_date_str, window=10):
     return returns_df.iloc[start:end], event_date
 
 
-# ── PART D — Abnormal Returns and CAR for all events ────────────────────────
-#
-# Raw CAR = cumulative sum of AR from the start of the window (day -W).
-# Normalised post-event CAR = CAR[t] - CAR[-1], so it is zero-based at the
-# event boundary.  Summary statistics use the normalised version so they
-# capture only the incremental impact of each event.
+
 
 print("\n" + "=" * 70)
 print("PART D — Abnormal Returns & CAR")
@@ -108,7 +99,7 @@ for event_name, event_date_str in EVENTS.items():
         ar_series = pd.Series(ar, index=rel_days, name="AR")
         car_raw_series = pd.Series(car_raw, index=rel_days, name="CAR_raw")
 
-        # Normalised: subtract CAR at day -1 so post-event starts from 0
+       
         car_at_minus1 = car_raw_series.get(-1, 0.0)
         car_norm_series = car_raw_series - car_at_minus1
         car_norm_series.name = "CAR"
@@ -128,7 +119,7 @@ for event_name, event_date_str in EVENTS.items():
               f"CAR[+5]={car5*100:+.2f}%  "
               f"CAR[+10]={car10*100:+.2f}%")
 
-# ── PART E — Summary statistics table ───────────────────────────────────────
+
 
 print("\n" + "=" * 70)
 print("PART E — Event Study Summary Table")
@@ -138,9 +129,9 @@ rows = []
 for event_name in EVENTS:
     for asset in PRIMARY_ASSETS:
         r = results[event_name][asset]
-        car = r["CAR"]  # normalised
+        car = r["CAR"] 
 
-        # Post-event window: days +1 to +10 (whatever is available)
+       
         post_days = [d for d in car.index if 1 <= d <= 10]
         post_car = car.loc[post_days] if post_days else pd.Series(dtype=float)
 
@@ -173,7 +164,7 @@ pd.set_option("display.float_format", lambda x: f"{x:.2f}")
 print(f"\n{event_summary.to_string(index=False)}")
 print(f"\nSaved event_study_summary.csv -> {event_summary.shape}")
 
-# Sanity check: for E1 (baseline-adjacent), CAR_pre_event should be near 0
+
 e1_rows = event_summary[event_summary["event_name"] == "E1_Strikes"]
 e1_bad = e1_rows[e1_rows["CAR_pre_event"].abs() > 2.0]
 if len(e1_bad) > 0:
@@ -182,12 +173,12 @@ if len(e1_bad) > 0:
 else:
     print("\nSanity check passed: E1 CAR_pre_event values within +/-2%.")
 
-# For later events, large pre-event CARs are expected (crisis already underway)
+
 later = event_summary[event_summary["event_name"] != "E1_Strikes"]
 print(f"\nNote: HORMUZ/E2/E3 pre-event CARs are large because their windows")
 print(f"overlap the active crisis. This is expected, not a baseline error.")
 
-# ── PART F — Headline stats ─────────────────────────────────────────────────
+
 
 print("\n" + "=" * 70)
 print("PART F — Key Interview Stats")
@@ -201,7 +192,7 @@ brent_e2 = event_summary[(event_summary["event_name"] == "E2_MoU") & (event_summ
 print(f"\n1. Brent Crude peak CAR after E1 (strikes): {brent_e1['peak_CAR']:+.2f}% in {int(brent_e1['days_to_peak'])} trading days")
 print(f"2. WTI Crude peak CAR after E1 (strikes): {wti_e1['peak_CAR']:+.2f}% in {int(wti_e1['days_to_peak'])} trading days")
 
-# E2 has limited post-event data (data ends June 18 = 1 day post-event)
+
 e2_car = results["E2_MoU"]["Brent_Crude"]["CAR"]
 e2_post_days = [d for d in e2_car.index if d >= 0]
 e2_available_max = max(e2_post_days) if e2_post_days else 0
@@ -211,8 +202,6 @@ print(f"   (Note: data ends {e2_available_max} trading day(s) post-event; longer
 
 e1_peak_day = int(brent_e1["days_to_peak"])
 
-# For E2 de-escalation speed: measure how fast pre-event CAR accumulated
-# (the MoU impact was largely priced-in BEFORE the signing)
 e2_car_raw = results["E2_MoU"]["Brent_Crude"]["CAR_raw"]
 e2_pre_days = [d for d in e2_car_raw.index if d < 0]
 e2_pre_car = e2_car_raw.loc[e2_pre_days]
@@ -224,7 +213,6 @@ e1_window, _ = get_event_window(returns, "2026-02-28", window=10)
 corr = e1_window["Brent_Crude"].corr(e1_window["Natural_Gas"])
 print(f"5. Natural Gas correlation to Brent during E1 window: {corr:.4f}")
 
-# ── Interview-ready paragraph ───────────────────────────────────────────────
 
 e2_pre_drop = abs(results["E2_MoU"]["Brent_Crude"]["CAR_pre_event_raw"] * 100)
 escalation_rate = abs(brent_e1["peak_CAR"]) / e1_peak_day  # %/day
