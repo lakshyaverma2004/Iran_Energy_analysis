@@ -21,7 +21,6 @@ WINDOWS = {
     "POST_MOU":     ("2026-06-17", "2026-06-20"),
 }
 
-# ── PART A — Rolling volatility ─────────────────────────────────────────────
 
 print("=" * 70)
 print("PART A — Rolling volatility (20-day, annualised)")
@@ -38,7 +37,7 @@ print(f"Saved volatility.csv -> {rolling_vol.shape[0]} rows x {rolling_vol.shape
 print(f"\nFirst 5 rows (NaN until 20-day window fills):\n{rolling_vol.head()}")
 print(f"\nLast 5 rows:\n{rolling_vol.tail()}")
 
-# ── PART B — Three-window comparison ────────────────────────────────────────
+
 
 print("\n" + "=" * 70)
 print("PART B — Window volatility comparison")
@@ -80,7 +79,6 @@ pd.set_option("display.float_format", lambda x: f"{x:.2f}")
 print(f"\n{vol_summary.to_string(index=False)}")
 print(f"\nSaved volatility_summary.csv -> {vol_summary.shape}")
 
-# ── PART C — Headline volatility stats ──────────────────────────────────────
 
 print("\n" + "=" * 70)
 print("PART C — Headline Volatility Stats")
@@ -98,19 +96,19 @@ for asset in ["Brent_Crude", "WTI_Crude", "Natural_Gas"]:
     print(f"\n{asset} mean volatility: Pre-conflict = {pre['mean_vol']:.1f}%, "
           f"Conflict = {con['mean_vol']:.1f}%, Ratio = {con['vol_vs_pre_ratio']:.1f}x")
 
-# Peak single-day Brent volatility during conflict
+
 brent_conflict = rolling_vol.loc["2026-02-28":"2026-06-16", "Brent_Crude"].dropna()
 peak_vol = brent_conflict.max()
 peak_date = brent_conflict.idxmax()
 print(f"\nPeak single-day Brent volatility during conflict: {peak_vol:.1f}% annualised on {peak_date.date()}")
 
-# Post-MoU vs pre-conflict
+
 post = get_vol("Brent_Crude", "POST_MOU")
 pre_brent = get_vol("Brent_Crude", "PRE_CONFLICT")
 print(f"Post-MoU Brent volatility vs pre-conflict: {post['vol_vs_pre_ratio']:.1f}x "
       f"(did it return to normal?)")
 
-# ── PART D — Correlation analysis ───────────────────────────────────────────
+
 
 print("\n" + "=" * 70)
 print("PART D — Correlation analysis")
@@ -140,7 +138,6 @@ for a, b in pairs:
     con_c = corr_con.loc[a, b]
     print(f"{a} vs {b:<20s} {pre_c:+.3f}   {con_c:+.3f}   {con_c - pre_c:+.3f}")
 
-# ── PART E — Append findings ────────────────────────────────────────────────
 
 print("\n" + "=" * 70)
 print("PART E — Appending volatility findings")

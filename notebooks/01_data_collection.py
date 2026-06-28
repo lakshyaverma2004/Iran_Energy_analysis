@@ -18,7 +18,6 @@ PROC_DIR = PROJECT_ROOT / "data" / "processed"
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 PROC_DIR.mkdir(parents=True, exist_ok=True)
 
-# ── PART A: yfinance price data ──────────────────────────────────────────────
 
 START = "2025-12-01"
 END = "2026-06-20"
@@ -71,7 +70,7 @@ for col in prices.columns:
     n = prices[col].isna().sum()
     print(f"    {col:20s} {n:>4d}")
 
-# ── PART B: FRED macro data ─────────────────────────────────────────────────
+
 
 print("\n" + "=" * 70)
 print("PART B — Downloading FRED macro data")
@@ -116,7 +115,7 @@ macro.to_csv(PROC_DIR / "macro.csv")
 print(f"Saved macro.csv       → {macro.shape[0]} rows × {macro.shape[1]} cols")
 print(f"  Date range: {macro.index.min().date()} to {macro.index.max().date()}")
 
-# ── PART C: Data quality report ──────────────────────────────────────────────
+
 
 print("\n" + "=" * 70)
 print("PART C — Data Quality Report")
